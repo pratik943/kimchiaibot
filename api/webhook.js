@@ -4,20 +4,35 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const KIMCHI_API_KEY = process.env.KIMCHI_API_KEY;
 
 module.exports = async (req, res) => {
-  try {
-    const message = req.body.message;
+  // Browser visit test
+  if (req.method !== "POST") {
+    return res.status(200).send("Bot is running");
+  }
 
-    if (!message || !message.text) {
-      return res.status(200).send("ok");
+  try {
+    const update = req.body;
+
+    if (!update || !update.message) {
+      return res.status(200).send("No message");
     }
 
-    const chatId = message.chat.id;
-    const userText = message.text;
+    const chatId = update.message.chat.id;
+    const userText = update.message.text;
 
+    // Send typing indicator
+    await axios.post(
+      `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendChatAction`,
+      {
+        chat_id: chatId,
+        action: "typing"
+      }
+    );
+
+    // Ask Kimchi
     const aiResponse = await axios.post(
       "https://api.kimchi.dev/v1/chat/completions",
       {
-        model: "kimi-k2.5",
+        model: "kimi-k2",
         messages: [
           {
             role: "user",
@@ -34,9 +49,10 @@ module.exports = async (req, res) => {
     );
 
     const reply =
-      aiResponse.data.choices?.[0]?.message?.content ||
-      "No response.";
+      aiResponse?.data?.choices?.[0]?.message?.content ||
+      "Sorry, no response received.";
 
+    // Reply to Telegram
     await axios.post(
       `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,
       {
@@ -45,9 +61,13 @@ module.exports = async (req, res) => {
       }
     );
 
-    res.status(200).send("ok");
-  } catch (err) {
-    console.error(err.response?.data || err.message);
-    res.status(200).send("error");
+    return res.status(200).send("OK");
+
+  } catch (error) {
+    console.error(
+      error?.response?.data || error?.message || error
+    );
+
+    return res.status(200).send("ERROR");
   }
 };
