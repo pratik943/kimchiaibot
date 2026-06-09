@@ -48,9 +48,11 @@ module.exports = async (req, res) => {
       }
     );
 
-    const reply =
-      aiResponse?.data?.choices?.[0]?.message?.content ||
-      "Sorry, no response received.";
+    let reply =
+  aiResponse?.data?.choices?.[0]?.message?.content ||
+  "Sorry, no response received.";
+
+reply = reply.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 
     // Reply to Telegram
     await axios.post(
