@@ -30,9 +30,9 @@ module.exports = async (req, res) => {
 
     // Ask Kimchi
     const aiResponse = await axios.post(
-      "https://api.kimchi.dev/v1/chat/completions",
+      "https://llm.kimchi.dev/openai/v1/chat/completions",
       {
-        model: "kimi-k2",
+        model: "kimi-k2.5",
         messages: [
           {
             role: "user",
