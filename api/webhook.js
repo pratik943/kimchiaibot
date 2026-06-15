@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
     const aiResponse = await axios.post(
       "https://llm.kimchi.dev/openai/v1/chat/completions",
       {
-        model: "kimi-k2.6",
+        model: "nemotron-3-ultra-fp4",
         messages: [
           {
             role: "user",
