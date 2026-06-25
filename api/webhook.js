@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const BTL_API_KEY = process.env.BTL_API_KEY;
+const BAI_API_KEY = process.env.BAI_API_KEY;
 
 module.exports = async (req, res) => {
   // Browser visit test
@@ -30,9 +30,9 @@ module.exports = async (req, res) => {
 
     // Ask Kimchi
     const aiResponse = await axios.post(
-      "https://api.badtheorylabs.com/v1/chat/completions",
+      "https://api.b.ai/v1/chat/completions",
       {
-        model: "btl-2",
+        model: "glm-5.2",
         messages: [
           {
             role: "user",
@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${BTL_API_KEY}`,
+          Authorization: `Bearer ${BAI_API_KEY}`,
           "Content-Type": "application/json"
         }
       }
