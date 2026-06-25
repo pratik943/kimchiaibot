@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const KIMCHI_API_KEY = process.env.BTL_API_KEY;
+const BTL_API_KEY = process.env.BTL_API_KEY;
 
 module.exports = async (req, res) => {
   // Browser visit test
