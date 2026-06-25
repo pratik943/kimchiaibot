@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
 
     // Ask Kimchi
     const aiResponse = await axios.post(
-      "https://api.badtheorylabs.com/v1",
+      "https://api.badtheorylabs.com/v1/chat/completions",
       {
         model: "btl-2",
         messages: [
