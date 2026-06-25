@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const KIMCHI_API_KEY = process.env.KIMCHI_API_KEY;
+const KIMCHI_API_KEY = process.env.BTL_API_KEY;
 
 module.exports = async (req, res) => {
   // Browser visit test
@@ -30,9 +30,9 @@ module.exports = async (req, res) => {
 
     // Ask Kimchi
     const aiResponse = await axios.post(
-      "https://llm.kimchi.dev/openai/v1/chat/completions",
+      "https://api.badtheorylabs.com/v1",
       {
-        model: "glm-5.2-fp8",
+        model: "btl-2",
         messages: [
           {
             role: "user",
@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${KIMCHI_API_KEY}`,
+          Authorization: `Bearer ${BTL_API_KEY}`,
           "Content-Type": "application/json"
         }
       }
