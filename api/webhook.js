@@ -4,12 +4,15 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const BAI_API_KEY = process.env.BAI_API_KEY;
 
 module.exports = async (req, res) => {
-  // Browser visit test
+
   if (req.method !== "POST") {
     return res.status(200).send("Bot is running");
   }
 
   try {
+
+    console.log("STEP 0 - Webhook hit");
+
     const update = req.body;
 
     if (!update || !update.message) {
@@ -19,7 +22,9 @@ module.exports = async (req, res) => {
     const chatId = update.message.chat.id;
     const userText = update.message.text;
 
-    // Send typing indicator
+    console.log("STEP 1 - Message received:", userText);
+    console.log("API KEY EXISTS:", !!BAI_API_KEY);
+
     await axios.post(
       `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendChatAction`,
       {
@@ -28,7 +33,8 @@ module.exports = async (req, res) => {
       }
     );
 
-    // Ask Kimchi
+    console.log("STEP 2 - Sending request to BAI");
+
     const aiResponse = await axios.post(
       "https://api.b.ai/v1/chat/completions",
       {
@@ -41,6 +47,7 @@ module.exports = async (req, res) => {
         ]
       },
       {
+        timeout: 10000,
         headers: {
           Authorization: `Bearer ${BAI_API_KEY}`,
           "Content-Type": "application/json"
@@ -48,13 +55,17 @@ module.exports = async (req, res) => {
       }
     );
 
+    console.log("STEP 3 - BAI responded");
+    console.log(JSON.stringify(aiResponse.data, null, 2));
+
     let reply =
-  aiResponse?.data?.choices?.[0]?.message?.content ||
-  "Sorry, no response received.";
+      aiResponse?.data?.choices?.[0]?.message?.content ||
+      "No response received.";
 
-reply = reply.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+    reply = reply
+      .replace(/<think>[\s\S]*?<\/think>/gi, "")
+      .trim();
 
-    // Reply to Telegram
     await axios.post(
       `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,
       {
@@ -66,9 +77,14 @@ reply = reply.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
     return res.status(200).send("OK");
 
   } catch (error) {
-    console.error(
-      error?.response?.data || error?.message || error
-    );
+
+    console.error("ERROR:");
+
+    if (error.response) {
+      console.error(JSON.stringify(error.response.data, null, 2));
+    } else {
+      console.error(error.message);
+    }
 
     return res.status(200).send("ERROR");
   }
