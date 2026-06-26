@@ -47,7 +47,7 @@ module.exports = async (req, res) => {
         ]
       },
       {
-        timeout: 10000,
+        timeout: 30000,
         headers: {
           Authorization: `Bearer ${BAI_API_KEY}`,
           "Content-Type": "application/json"
